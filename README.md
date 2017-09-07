@@ -14,11 +14,9 @@ Localeapp I18n-js: Iintegrating javascript based front end localizations to the 
 
 **License**:      MIT License
 
-**Latest Version**: 0.0.1a
+**Latest Version**: 0.0.2
 
-**Ruby Version**: 1.9.2, 1.9.3
-
-**Rails Version**: > 3.1
+**Rails Version**: ~ 4.0
 
 **Release Date**: TBD
 
@@ -31,7 +29,7 @@ Installation
 ------------
 Add the following to your Gemfile
 
-  gem "localeapp-i18n-js",  :git => 'git://github.com/randym/localeapp-i18n-js.git'
+  gem "localeapp-i18n-js",  :git => 'git://github.com/shoperb/localeapp-i18n-js.git'
 
 Configuration
 -------------
