@@ -2,7 +2,7 @@
 var I18n = I18n || {};
 //override the default I18n-js missingTranslation method to post back missing translations
 I18n.missingTranslation = function(path, options) {
-  this.add_missing_translation(this.currentLocale(), path);
+  this.addMissingTranslation(this.currentLocale(), path);
   // 'guess' behaviour by default
   // get only the last portion of the path
   var s = path.split('.').slice(-1)[0];
@@ -54,16 +54,32 @@ I18n.translate = function(scope, options) {
 
 I18n.t = I18n.translate;
 
-I18n.add_missing_translation = function add_missing_translation(locale, key) {
+I18n.missingTranslations = {};
+I18n.missingTranslationSending = null;
+
+I18n.addMissingTranslation = function addMissingTranslation(locale, key) {
+  if (!I18n.missingTranslations[locale]) {
+    I18n.missingTranslations[locale] = []
+  };
+  I18n.missingTranslations[locale].push(key);
+
+  if (I18n.missingTranslationSending) {
+    clearTimeout(I18n.missingTranslationSending)
+  }
+  I18n.missingTranslationSending = setTimeout(I18n.sendMissingTranslations, 1000);
+};
+
+I18n.sendMissingTranslations = function sendMissingTranslations() {
   $.ajax({
     url: "localeapp_i18n_js",
     type: 'POST',
     dataType: 'json',
-    data: {locale: locale, key: key},
+    data: { missing: I18n.missingTranslations },
     error: function(data, status, response) {
       //undecided as to what should happen here..
       console.log(response)
     }
   });
+  I18n.missingTranslations = {};
 }
 <% end %>
