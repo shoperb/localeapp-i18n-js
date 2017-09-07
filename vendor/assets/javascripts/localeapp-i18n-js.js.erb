@@ -5,7 +5,7 @@ I18n.missingTranslation = function(path, options) {
   this.addMissingTranslation(this.currentLocale(), path);
   // 'guess' behaviour by default
   // get only the last portion of the path
-  if(this.missingBehaviour == 'guess'){
+  if (this.missingBehaviour == 'guess'){
     var s = path.split('.').slice(-1)[0];
   //replace underscore with space && camelcase with space and lowercase letter
     return s.replace('_',' ').replace(/([a-z])([A-Z])/g, function(match, p1, p2) {return p1 + ' ' + p2.toLowerCase()} );
@@ -17,7 +17,11 @@ I18n.missingTranslation = function(path, options) {
 // override default I18n-js translate method in order to treat default values as missing translations:
 I18n.translate = function(scope, options) {
   options = this.prepareOptions(options);
-  defaultValue = options.defaultValue
+  var defaultValue;
+
+  if (this.missingBehaviour != 'strict'){
+    defaultValue = options.defaultValue
+  }
   delete options.defaultValue
 
   var translationOptions = [{scope: scope}];
