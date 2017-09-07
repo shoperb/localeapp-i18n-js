@@ -1,15 +1,58 @@
 <% if(LocaleappI18nJs.localeapp_initialized? == true) %>
 var I18n = I18n || {};
 //override the default I18n-js missingTranslation method to post back missing translations
-I18n.missingTranslation = function() {
-  var path = [], count = arguments.length
-  for (var i = 0; i < count; i++) {
-    path.push(arguments[i]);
-  }
-  path = path.join('.')
+I18n.missingTranslation = function(path, options) {
   this.add_missing_translation(this.currentLocale(), path);
-  return '[missing "' + this.currentLocale() + path + '" translation]';
+  // 'guess' behaviour by default
+  // get only the last portion of the path
+  var s = path.split('.').slice(-1)[0];
+  //replace underscore with space && camelcase with space and lowercase letter
+  return s.replace('_',' ').replace(/([a-z])([A-Z])/g, function(match, p1, p2) {return p1 + ' ' + p2.toLowerCase()} );
 };
+
+// override default I18n-js translate method in order to treat default values as missing translations:
+I18n.translate = function(scope, options) {
+  options = this.prepareOptions(options);
+  defaultValue = options.defaultValue
+  delete options.defaultValue
+
+  var translationOptions = [{scope: scope}];
+
+  if (this.isSet(options.defaults)) {
+    translationOptions = translationOptions.concat(options.defaults);
+  }
+
+  var translation;
+  // Iterate through the translation options until a translation
+  // or message is found.
+  var translationFound =
+    translationOptions.some(function(translationOption) {
+      if (this.isSet(translationOption.scope)) {
+        translation = this.lookup(translationOption.scope, options);
+      } else if (this.isSet(translationOption.message)) {
+        translation = translationOption.message;
+      }
+
+      if (translation !== undefined && translation !== null) {
+        return true;
+      }
+    }, this);
+
+  if (!translationFound) {
+    defaultLabel = this.missingTranslation(scope, options);
+    return defaultValue || defaultLabel
+  }
+
+  if (typeof(translation) === "string") {
+    translation = this.interpolate(translation, options);
+  } else if (translation instanceof Object && this.isSet(options.count)) {
+    translation = this.pluralize(options.count, translation, options);
+  }
+
+  return translation;
+};
+
+I18n.t = I18n.translate;
 
 I18n.add_missing_translation = function add_missing_translation(locale, key) {
   $.ajax({
