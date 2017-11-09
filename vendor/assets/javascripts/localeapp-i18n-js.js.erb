@@ -79,7 +79,7 @@ I18n.addMissingTranslation = function addMissingTranslation(locale, key) {
 
 I18n.sendMissingTranslations = function sendMissingTranslations() {
   $.ajax({
-    url: "localeapp_i18n_js",
+    url: "/localeapp_i18n_js",
     type: 'POST',
     dataType: 'json',
     data: { missing: I18n.missingTranslations },
