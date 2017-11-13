@@ -14,6 +14,9 @@ I18n.missingTranslation = function(path, options) {
   }
 };
 
+
+
+
 // override default I18n-js translate method in order to treat default values as missing translations:
 I18n.translate = function(scope, options) {
   options = this.prepareOptions(options);
@@ -54,7 +57,7 @@ I18n.translate = function(scope, options) {
   if (typeof(translation) === "string") {
     translation = this.interpolate(translation, options);
   } else if (translation instanceof Object && this.isSet(options.count)) {
-    translation = this.pluralize(options.count, translation, options);
+    translation = this.pluralize(options.count, scope, options);
   }
 
   return translation;
