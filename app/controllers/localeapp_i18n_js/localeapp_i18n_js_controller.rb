@@ -13,11 +13,16 @@ module LocaleappI18nJs
             add_missing_translation locale, key
           end
         end
-        Localeapp.sender.post_missing_translations
 
-        render :json => true
+        begin
+          Localeapp.sender.post_missing_translations
+        rescue StandardError => e
+          Airbrake.notify(e) if defined?(Airbrake)
+        end
+
+        render json: true
       else
-        render :json => false
+        render json: false
       end
     end
 
@@ -26,8 +31,5 @@ module LocaleappI18nJs
     def add_missing_translation(locale, key)
       Localeapp.missing_translations.add locale, key
     end
-
   end
 end
-
-
