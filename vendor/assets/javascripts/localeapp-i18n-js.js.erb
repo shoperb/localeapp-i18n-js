@@ -81,16 +81,10 @@ I18n.addMissingTranslation = function addMissingTranslation(locale, key) {
 };
 
 I18n.sendMissingTranslations = function sendMissingTranslations() {
-  $.ajax({
-    url: "/localeapp_i18n_js",
-    type: 'POST',
-    dataType: 'json',
-    data: { missing: I18n.missingTranslations },
-    error: function(data, status, response) {
-      //undecided as to what should happen here..
-      console.log(response)
-    }
-  });
+  var xhr = new XMLHttpRequest();
+  xhr.open('POST', '/localeapp_i18n_js');
+  xhr.setRequestHeader('Content-Type', 'application/json');
+  xhr.send(JSON.stringify({missing: I18n.missingTranslations}))
   I18n.missingTranslations = {};
 }
 <% end %>
